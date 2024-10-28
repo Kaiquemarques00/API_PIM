@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 class UserController {
-  async buscaArc(req, res) {
+  async buscaUsuariosArquivados(req, res) {
     try {
       const require = await db.query("SELECT * FROM usuarios_arquivados");
 
@@ -15,7 +15,7 @@ class UserController {
     }
   }
 
-  async buscaUserArc(req, res) {
+  async buscaUsuarioArquivado(req, res) {
     const id = req.params.id;
 
     try {
@@ -34,7 +34,7 @@ class UserController {
     }
   }
 
-  async busca(req, res) {
+  async buscaUsuarios(req, res) {
     try {
       const require = await db.query("SELECT * FROM usuarios");
 
@@ -48,7 +48,7 @@ class UserController {
     }
   }
 
-  async buscaUser(req, res) {
+  async buscaUsuario(req, res) {
     const id = req.params.id;
 
     try {
@@ -67,7 +67,7 @@ class UserController {
     }
   }
 
-  async register(req, res) {
+  async criaUsuario(req, res) {
     
     const { nome, email, senha, role } = req.body;
 
@@ -107,7 +107,7 @@ class UserController {
     }
   }
 
-  async delete(req, res) {
+  async arquivaUsuario(req, res) {
     const id = req.params.id;
 
     try {
@@ -245,7 +245,7 @@ class UserController {
     }
   }
 
-  async login(req, res) {
+  async autenticaUsuario(req, res) {
     const { email, senha } = req.body;
 
     if (!email) return res.status(422).json("Email é obrigatório");

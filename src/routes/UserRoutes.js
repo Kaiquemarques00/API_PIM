@@ -12,25 +12,23 @@ const router = express.Router();
 
 router.get('/', (req, res) => res.status(200).json("Rota padrão"));
 /* Rota de consulta de todos os usuários */
-router.get('/users', userController.busca);
+router.get('/users', userController.buscaUsuarios);
 /* Rota privada  teste */
-router.get('/user/:id', userController.buscaUser);
+router.get('/user/:id', userController.buscaUsuario);
 /* Rota de registro de usuário */
-router.post('/user', userController.register);
+router.post('/user', userController.criaUsuario);
 /* Rota de Deleção de usuário */
 router.put('/user/:id', userController.alteraRegistro);
 /* Rota de Deleção de usuário */
 router.patch('/user/:id', userController.alteraCampo);
 /* Rota de Deleção de usuário */
-router.delete('/user/:id', userController.delete);
+router.delete('/user/:id', userController.arquivaUsuario);
 /* Rota teste para usuarios arquivados */
-router.get('/users/arc', userController.buscaArc);
+router.get('/users/arc', userController.buscaUsuariosArquivados);
 /* Rota teste para um usuario arquivado */
-router.get('/user/arc/:id', userController.buscaUserArc);
-
-
+router.get('/user/arc/:id', userController.buscaUsuarioArquivado);
 /* Rota de autenticação */
-router.post('/auth/login', userController.login);
+router.post('/auth/login', userController.autenticaUsuario);
 
 
 
