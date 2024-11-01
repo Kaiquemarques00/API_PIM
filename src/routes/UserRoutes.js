@@ -22,7 +22,7 @@ router.put('/user/:id', userController.alteraRegistro);
 /* Rota de Deleção de usuário */
 router.patch('/user/:id', userController.alteraCampo);
 /* Rota de Deleção de usuário */
-router.delete('/user/:id', userController.deletaUsuario);
+router.delete('/user/:id', userController.arquivaUsuario);
 /* Rota teste para usuarios arquivados */
 router.get('/users/arc', userController.buscaUsuariosArquivados);
 /* Rota teste para um usuario arquivado */
