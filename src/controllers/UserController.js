@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 class UserController {
   async buscaUsuariosArquivados(req, res) {
     try {
-      const require = await db.query("SELECT * FROM usuarios_arquivados");
+      const require = await db.query("SELECT * FROM usuarios_arquivados ORDER BY usuario_id ASC");
 
       const usersArc = require.rows;
 
@@ -36,7 +36,7 @@ class UserController {
 
   async buscaUsuarios(req, res) {
     try {
-      const require = await db.query("SELECT * FROM usuarios");
+      const require = await db.query("SELECT * FROM usuarios ORDER BY usuario_id ASC");
 
       const users = require.rows;
 
@@ -107,7 +107,7 @@ class UserController {
     }
   }
 
-  async deletaUsuario(req, res) {
+  async arquivaUsuario(req, res) {
     const id = req.params.id;
 
     try {
