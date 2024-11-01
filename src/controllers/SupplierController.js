@@ -12,7 +12,7 @@ class SupplierController {
     
           const suppliers = require.rows;
 
-          if (suppliers.length === 0) return res.status(422).json("Nenhum fornecedor encontrado");
+          if (suppliers.length === 0) return res.status(404).json("Nenhum fornecedor encontrado");
     
           res.status(200).json(suppliers);
         } catch (error) {
@@ -32,9 +32,9 @@ class SupplierController {
           WHERE fornecedores.fornecedor_id = $1
         `, [id]);
 
-        if(require.rows.length < 1) return res.status(422).json("Fornecedor não existe");
+        if(require.rows.length < 1) return res.status(404).json("Fornecedor não existe");
 
-        res.status(200).json(require.rows[0]);
+        res.status(200).json(require.rows);
       } catch (error) {
         console.log(error);
         res.status(422).json("Erro ao acessar banco de dados");
@@ -45,7 +45,6 @@ class SupplierController {
       
       try {
         const require = await db.query("SELECT * FROM fornecedores_arquivados");
-        console.log(require.rows);
 
         if (require.rows.length === 0) return res.status(422).json("Nenhum fornecedor arquivado encontrado");
 
@@ -61,9 +60,9 @@ class SupplierController {
       try {
         const require = await db.query("SELECT * FROM fornecedores_arquivados WHERE fornecedor_id = $1", [id]);
 
-        if(require.rows.length === 0) return res.status(422).json("Fornecedor não encontrado");
+        if(require.rows.length === 0) return res.status(404).json("Fornecedor não encontrado");
 
-        res.status(200).json(require.rows[0]);
+        res.status(200).json(require.rows);
       } catch (error) {
         console.log(error);
       }
@@ -114,7 +113,24 @@ class SupplierController {
       const { nome, cnpj, telefone, email, observacoes } = req.body;
       const { rua, numero, bairro, cidade, estado, cep } = req.body;
 
+       /* Gerenciamento de erro para cadastro do fornecedor */
+       if (!nome) return res.status(422).json("Nome do fornecedor deve ser preenchido");
+       if (!cnpj) return res.status(422).json("CNPJ do fornecedor deve ser preenchido");
+       if (!telefone) return res.status(422).json("Telefone do fornecedor deve ser preenchido");
+       if (!email) return res.status(422).json("Email do fornecedor deve ser preenchido");
+       /* Gerenciamento de erro para cadastro de endereço do fornecedor */
+       if (!rua) return res.status(422).json("Rua do fornecedor deve ser preenchido");
+       if (!numero) return res.status(422).json("Número do fornecedor deve ser preenchido");
+       if (!bairro) return res.status(422).json("Bairro do fornecedor deve ser preenchido");
+       if (!cidade) return res.status(422).json("Cidade do fornecedor deve ser preenchido");
+       if (!estado) return res.status(422).json("Estado do fornecedor deve ser preenchido");
+       if(!cep) return res.status(422).json("CEP do fornecedor deve ser preenchido");
+
       try {
+        const checkSupplierExists = await db.query("SELECT * FROM fornecedores WHERE fornecedor_id = $1", [id]);
+
+        if (checkSupplierExists.rows.length === 0) return res.status(404).json("Fornecedor não existe");
+
         const require = await db.query("SELECT * FROM fornecedores WHERE cnpj = $1", [cnpj]);
 
         if (require.rows.length > 0) return res.status(409).json("Fornecedor com CNPJ já cadastrado");
@@ -145,9 +161,9 @@ class SupplierController {
       if (email) dadosParaAtualizarFornecedor.email = email;
       if (telefone) dadosParaAtualizarFornecedor.telefone = telefone;
       if (observacoes) dadosParaAtualizarFornecedor.observacoes = observacoes;
-      /* ------ */
+
       const dadosParaAtualizarEndereco = {};
-      if (rua) dadosParaAtualizarEndereco.telefone = rua;
+      if (rua) dadosParaAtualizarEndereco.rua = rua;
       if (numero) dadosParaAtualizarEndereco.numero = numero;
       if (bairro) dadosParaAtualizarEndereco.bairro = bairro;
       if (cidade) dadosParaAtualizarEndereco.cidade = cidade;
@@ -160,36 +176,36 @@ class SupplierController {
       const camposFornecedor = Object.keys(dadosParaAtualizarFornecedor);
       const valoresFornecedor = Object.values(dadosParaAtualizarFornecedor);
       const setClauseSupplier = camposFornecedor.map((campo, index) => `${campo} = $${index + 1}`).join(', ');
-      /* ------- */
+
       const camposEndereco = Object.keys(dadosParaAtualizarEndereco);
       const valoresEndereco = Object.values(dadosParaAtualizarEndereco);
       const setClauseAddress = camposEndereco.map((campoA, indexA) => `${campoA} = $${indexA + 1}`).join(', ');
 
       try {
 
+        const checkSupplierExists = await db.query("SELECT * FROM fornecedores WHERE fornecedor_id = $1", [id])
+
+        if (checkSupplierExists.rows.length === 0 ) return res.status(404).json('Fornecedor não existe');
+
         if(cnpj) {
          const checkSupplierExists = await db.query(`SELECT * FROM fornecedores WHERE fornecedores.cnpj = $1`, [cnpj]);
 
           if (checkSupplierExists.rows.length > 0)
-            return res.status(422).json("Fornecedor com CNPJ já cadastrado");
+            return res.status(409).json("Fornecedor com CNPJ já cadastrado");
         }
 
         if(Object.keys(dadosParaAtualizarFornecedor).length > 0) {
-          const result = await db.query(
+          await db.query(
             `UPDATE fornecedores SET ${setClauseSupplier} WHERE fornecedor_id = $${camposFornecedor.length + 1} RETURNING *`,
             [...valoresFornecedor, id]
           );
-
-          if (result.rows.length === 0 ) return res.status(404).json('Fornecedor não existe');
         }
         
         if(Object.keys(dadosParaAtualizarEndereco).length > 0) {
-          const resultAddress = await db.query(
+          await db.query(
             `UPDATE fornecedores_endereco SET ${setClauseAddress} WHERE id = $${camposEndereco.length + 1} RETURNING *`,
             [...valoresEndereco, id]
           );
-
-          if (resultAddress.rows.length === 0) return res.status(404).json('Fornecedor não existe');
         }
 
         res.status(200).json("Fornecedor alterado com sucesso");
@@ -197,7 +213,7 @@ class SupplierController {
         console.log(error);
       }
     }
-
+    
     async arquivaFornecedor(req, res) {
       const id = req.params.id;
 
@@ -210,7 +226,7 @@ class SupplierController {
         `, [id]);
         const supplier = supplierExists.rows;
         
-        if(supplier.length === 0) return res.status(422).json("Fornecedor não encontrado");
+        if(supplier.length === 0) return res.status(404).json("Fornecedor não encontrado");
 
         const checkTable = await db.query("SELECT EXISTS ( SELECT FROM pg_tables WHERE tablename = 'fornecedores_arquivados')");
 

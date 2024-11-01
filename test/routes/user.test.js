@@ -283,7 +283,7 @@ describe("Testes para funcionalidades de alteração parcial de usuário", () =>
         expect(result.body).toBe("Nenhum campo para atualizar");
     });
 
-    test("Não deve alterar usuário caso não tenha nenhum dado", async () => {
+    test("Não deve alterar usuário caso email já cadastrado", async () => {
         const result = await request(app).patch('/user/44')
             .send({ email: "k12123teste@email.com" });
 
