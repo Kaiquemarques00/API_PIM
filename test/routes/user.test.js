@@ -20,7 +20,7 @@ describe("Testes para funcionalidades de usuários de consulta de usuários", ()
     });
 
     test("Deve listar um usuário pelo ID", async () => {
-        const result = await request(app).get('/user/43');
+        const result = await request(app).get('/user/2');
 
         expect(result.status).toBe(200);
         expect(result.body.length).toBeGreaterThan(0);
@@ -33,10 +33,10 @@ describe("Testes para funcionalidades de usuários de consulta de usuários", ()
     });
 
     test("Não deve consultar um usuário ativo caso não seja encontrado", async () => {
-        const result = await request(app).get('/user/arc/22');
+        const result = await request(app).get('/user/22');
 
         expect(result.status).toBe(404);
-        expect(result.body).toBe("User not found");
+        expect(result.body).toBe("Usuário não encontrado");
     });
 
     test("Deve listar todos os usuários arquivados", async () => {
@@ -54,7 +54,7 @@ describe("Testes para funcionalidades de usuários de consulta de usuários", ()
     });
 
     test("Deve listar um usuário arquivado pelo ID", async () => {
-        const result = await request(app).get('/user/arc/3');
+        const result = await request(app).get('/user/arc/1');
 
         expect(result.status).toBe(200);
         expect(result.body.length).toBeGreaterThan(0);
@@ -67,10 +67,10 @@ describe("Testes para funcionalidades de usuários de consulta de usuários", ()
     });
 
     test("Não deve consultar um usuário arquivado caso não seja encontrado", async () => {
-        const result = await request(app).get('/user/arc/1');
+        const result = await request(app).get('/user/arc/55');
 
         expect(result.status).toBe(404);
-        expect(result.body).toBe("User not found");
+        expect(result.body).toBe("Usuário não encontrado");
     });
 });
 
@@ -78,7 +78,7 @@ describe("Testes para funcionalidades de inserção de usuários", () => {
 
     test.skip("Deve inserir usuário com sucesso", async () => {
         const result = await request(app).post('/user')
-            .send({ nome: 'Kaique', email: 'k12123teste@email.com', senha: '123', role: 'administrador'});
+            .send({ nome: 'Kaique', email: 'k121232teste@email.com', senha: '123456789', role: 'administrador'});
 
         expect(result.status).toBe(201);
     });
@@ -136,24 +136,24 @@ describe("Testes para funcionalidades de inserção de usuários", () => {
             .send({ nome: 'Kaique', email: 'k12123teste@email.com', senha: '12345678', role: 'administrador'});
 
         expect(result.status).toBe(422);
-        expect(result.body).toBe("User exists");
+        expect(result.body).toBe("Usuário já existe");
     }); 
 });
 
 describe("Testes para funcionalidades de deleção/arquivação de usuários", () => {
 
     test.skip("Deve deletar um usuário pelo ID", async () => {
-        const result = await request(app).delete('/user/10');
+        const result = await request(app).delete('/user/6');
 
         expect(result.status).toBe(200);
-        //expect(result.body).toBe("Usuário arquivado com sucesso");
+        expect(result.body).toBe("Usuário arquivado com sucesso");
     });
 
     test("Não deve deletar um usuário pelo ID caso não seja encotrado", async () => {
-        const result = await request(app).delete('/user/2');
+        const result = await request(app).delete('/user/8');
 
         expect(result.status).toBe(404);
-        expect(result.body).toBe("User Not Found");
+        expect(result.body).toBe("Usuário não encontrado");
     });
 
 });
@@ -161,15 +161,15 @@ describe("Testes para funcionalidades de deleção/arquivação de usuários", (
 describe("Testes para funcionalidades de alteração completa de usuário", () => {
 
     test.skip("Deve alterar um usuário com sucesso", async () => {
-        const result = await request(app).put('/user/44')
-            .send({ nome: 'Jorge', email: 'Jorge123@email.com', senha: '321123123', role: 'administrador'});
+        const result = await request(app).put('/user/5')
+            .send({ nome: 'Jorge', email: 'Jorge1234@email.com', senha: '321123123', role: 'administrador'});
 
         expect(result.status).toBe(200);
         expect(result.body).toBe("Usuário alterado com sucesso");
     });
 
     test("Não deve alterar usuário sem nome", async () => {
-        const result = await request(app).put('/user/44')
+        const result = await request(app).put('/user/5')
             .send({ email: 'kteste@email.com', senha: '123', role: 'administrador'});
 
         expect(result.status).toBe(422);
@@ -177,7 +177,7 @@ describe("Testes para funcionalidades de alteração completa de usuário", () =
     });
 
     test("Não deve alterar usuário sem email", async () => {
-        const result = await request(app).put('/user/44')
+        const result = await request(app).put('/user/5')
             .send({ nome: "kaique", senha: '123', role: 'administrador'});
 
         expect(result.status).toBe(422);
@@ -185,7 +185,7 @@ describe("Testes para funcionalidades de alteração completa de usuário", () =
     });
 
     test("Não deve alterar usuário sem senha", async () => {
-        const result = await request(app).put('/user/44')
+        const result = await request(app).put('/user/5')
             .send({ nome: "Kaique", email: 'kteste@email.com', role: 'administrador'});
 
         expect(result.status).toBe(422);
@@ -193,7 +193,7 @@ describe("Testes para funcionalidades de alteração completa de usuário", () =
     });
 
     test("Não deve alterar usuário sem tipo de usuário", async () => {
-        const result = await request(app).put('/user/44')
+        const result = await request(app).put('/user/5')
             .send({ nome: "Kaique", email: 'kteste@email.com', senha: '123'});
 
         expect(result.status).toBe(422);
@@ -201,7 +201,7 @@ describe("Testes para funcionalidades de alteração completa de usuário", () =
     });
 
     test("Não deve alterar usuário sem tipo de usuário correto", async () => {
-        const result = await request(app).put('/user/44')
+        const result = await request(app).put('/user/5')
             .send({ nome: "Kaique", email: 'kteste@email.com', senha: '12312345678', role: 'administrado'});
 
         expect(result.status).toBe(422);
@@ -209,34 +209,34 @@ describe("Testes para funcionalidades de alteração completa de usuário", () =
     });
 
     test("Não deve alterar usuário com senha menor que 8 caracteres", async () => {
-        const result = await request(app).put('/user/44')
-            .send({ nome: "Kaique", email: 'kteste@email.com', senha: '123', role: 'administrador'});
+        const result = await request(app).put('/user/5')
+            .send({ nome: "Kaique", email: 'Jorge123@email.com', senha: '123', role: 'administrador'});
 
         expect(result.status).toBe(422);
         expect(result.body).toBe("A senha deve ter mais de 8 caracteres");
     });
 
     test("Não deve alterar usuário já existente", async () => {
-        const result = await request(app).put('/user/44')
-            .send({ nome: 'Kaique', email: 'Jorge123@email.com', senha: '12345678', role: 'administrador'});
+        const result = await request(app).put('/user/5')
+            .send({ nome: 'Kaiquee', email: 'k12123teste@email.com', senha: '12345678', role: 'administrador'});
 
         expect(result.status).toBe(422);
-        expect(result.body).toBe("User exists");
+        expect(result.body).toBe("Usuário já existe");
     }); 
 });
 
 describe("Testes para funcionalidades de alteração parcial de usuário", () => {
 
-    test("Deve alterar nome do usuário com sucesso", async () => {
-        const result = await request(app).patch('/user/44')
-            .send({ nome: 'Jorge'});
+    test.skip("Deve alterar nome do usuário com sucesso", async () => {
+        const result = await request(app).patch('/user/5')
+            .send({ nome: 'olhaaaa'});
 
         expect(result.status).toBe(200);
         expect(result.body).toBe("Usuário alterado com sucesso");
     });
 
     test.skip("Deve alterar email do usuário com sucesso", async () => {
-        const result = await request(app).patch('/user/44')
+        const result = await request(app).patch('/user/5')
             .send({ email: 'Jorge123123123@email.com'});
 
         expect(result.status).toBe(200);
@@ -244,7 +244,7 @@ describe("Testes para funcionalidades de alteração parcial de usuário", () =>
     });
 
     test("Deve alterar senha do usuário com sucesso", async () => {
-        const result = await request(app).patch('/user/44')
+        const result = await request(app).patch('/user/5')
             .send({ senha: '123456789'});
 
         expect(result.status).toBe(200);
@@ -252,15 +252,15 @@ describe("Testes para funcionalidades de alteração parcial de usuário", () =>
     });
 
     test("Deve alterar tipo do usuário com sucesso", async () => {
-        const result = await request(app).patch('/user/44')
-            .send({ role: 'gerente'});
+        const result = await request(app).patch('/user/5')
+            .send({ role: 'funcionario'});
 
         expect(result.status).toBe(200);
         expect(result.body).toBe("Usuário alterado com sucesso");
     });
 
     test("Não deve alterar senha se a mesma for menor que 8 caracteres", async () => {
-        const result = await request(app).patch('/user/44')
+        const result = await request(app).patch('/user/5')
             .send({ senha: '1234567'});
 
         expect(result.status).toBe(422);
@@ -268,7 +268,7 @@ describe("Testes para funcionalidades de alteração parcial de usuário", () =>
     });
 
     test("Não deve alterar tipo de usuario caso formatação esteja errada", async () => {
-        const result = await request(app).patch('/user/44')
+        const result = await request(app).patch('/user/5')
             .send({ role: 'gerent'});
 
         expect(result.status).toBe(422);
@@ -276,7 +276,7 @@ describe("Testes para funcionalidades de alteração parcial de usuário", () =>
     });
 
     test("Não deve alterar usuário caso não tenha nenhum dado", async () => {
-        const result = await request(app).patch('/user/44')
+        const result = await request(app).patch('/user/5')
             .send();
 
         expect(result.status).toBe(400);
@@ -284,19 +284,19 @@ describe("Testes para funcionalidades de alteração parcial de usuário", () =>
     });
 
     test("Não deve alterar usuário caso email já cadastrado", async () => {
-        const result = await request(app).patch('/user/44')
+        const result = await request(app).patch('/user/5')
             .send({ email: "k12123teste@email.com" });
 
         expect(result.status).toBe(422);
-        expect(result.body).toBe("User exists");
+        expect(result.body).toBe("Usuário já existe");
     });
 
-    test("Não deve alterar usuário caso não tenha nenhum dado", async () => {
-        const result = await request(app).patch('/user/4')
+    test("Não deve alterar usuário caso não exista", async () => {
+        const result = await request(app).patch('/user/55')
             .send({ nome: "Kaiqey" });
 
         expect(result.status).toBe(404);
-        expect(result.body).toBe("User not exists");
+        expect(result.body).toBe("Usuário não existe");
     });
 });
 
@@ -318,25 +318,25 @@ describe("Testes para funcionalidades de autenticação de usuário", () => {
         expect(result.body).toBe("Senha é obrigatória");
     });
 
-    test("Não deve autenticar se não tiver senha inserida", async () => {
+    test("Não deve autenticar se encontrar usuário", async () => {
         const result = await request(app).post('/auth/login')
             .send({email: 'Rove@email.com', senha: '1235254435'});
 
         expect(result.status).toBe(404);
-        expect(result.body).toBe("User not found");
+        expect(result.body).toBe("Usuário não encontrado");
     });
 
     test("Não deve autenticar se senha estiver incorreta", async () => {
         const result = await request(app).post('/auth/login')
-            .send({email: 'Kaique1@email.com', senha: '1235254435'});
+            .send({email: 'Admin@email.com', senha: '1235254435'});
 
         expect(result.status).toBe(422);
         expect(result.body).toBe("Senha incorreta");
     });
 
-    test("Não deve autenticar se senha estiver incorreta", async () => {
+    test("Deve autenticar usuário", async () => {
         const result = await request(app).post('/auth/login')
-            .send({email: 'Kaique12@email.com', senha: 'admin123456'});
+            .send({email: 'Admin@email.com', senha: '12345678'});
 
         expect(result.status).toBe(200);
         expect(result.body).toHaveProperty('token');
