@@ -5,6 +5,7 @@ import cors from 'cors'
 import db from "./config/db.js";
 import usuarioRoutes from "./routes/UsuarioRoutes.js"
 import fornecedorRoutes from "./routes/FornecedorRoutes.js"
+import insumoRoutes from "./routes/InsumoRoutes.js"
 
 dotenv.config();
 
@@ -15,5 +16,6 @@ db.connect();
 
 app.use('/', usuarioRoutes);
 app.use('/', fornecedorRoutes);
+app.use('/', insumoRoutes);
 
 export default app;
