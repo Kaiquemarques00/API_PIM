@@ -12,7 +12,7 @@ const router = express.Router();
 
 router.get('/', (req, res) => res.status(200).json("Rota padrão"));
 /* Rota de consulta de todos os usuários */
-router.get('/users', usuarioController.buscaUsuarios);
+router.get('/users', [tokenMiddleware.checkToken, RoleMiddleware.checkRole(['Administrador'])], usuarioController.buscaUsuarios);
 /* Rota privada  teste */
 router.get('/user/:id', usuarioController.buscaUsuario);
 /* Rota de registro de usuário */

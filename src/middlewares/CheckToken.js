@@ -14,7 +14,7 @@ class Token {
             const secret = process.env.SECRET;
 
             jwt.verify(token, secret, (err, decoded) => {
-                if (err) return res.status(401).send({ message: "Falha na autenticação do token!" });
+                if (err) return res.status(401).json("Falha na autenticação do token!");
                 req.id = decoded.id;
                 req.role = decoded.role;
                 next();

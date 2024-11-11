@@ -1,14 +1,11 @@
 import pg from "pg";
 
 const db = new pg.Pool({
-  user: process.env.PGUSER,
-  host: process.env.PGHOST,
-  database: process.env.PGDATABASE,
-  password: process.env.PGPASSWORD,
-  port: process.env.PGPORT || 5432,
-  ssl: {
-    rejectUnauthorized: false,
-  }
+  user: 'postgres',
+  host: 'localhost',
+  database: 'fazenda_urbana',
+  password: 'k26m03s2004',
+  port: 5432,
 });
 
 export default db;
