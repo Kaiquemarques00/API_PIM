@@ -14,20 +14,19 @@ router.get('/', (req, res) => res.status(200).json("Rota padrão"));
 /* Rota de consulta de todos os usuários */
 router.get('/users', [tokenMiddleware.checkToken, RoleMiddleware.checkRole(['Administrador'])], usuarioController.buscaUsuarios);
 /* Rota privada  teste */
-router.get('/user/:id', usuarioController.buscaUsuario);
+router.get('/user/:id', [tokenMiddleware.checkToken, RoleMiddleware.checkRole(['Administrador'])], usuarioController.buscaUsuario);
 /* Rota de registro de usuário */
-router.post('/user', usuarioController.criaUsuario);
+router.post('/user', [tokenMiddleware.checkToken, RoleMiddleware.checkRole(['Administrador'])], usuarioController.criaUsuario);
 /* Rota de Deleção de usuário */
-router.put('/user/:id', usuarioController.alteraRegistro);
+router.put('/user/:id', [tokenMiddleware.checkToken, RoleMiddleware.checkRole(['Administrador'])], usuarioController.alteraRegistro);
 /* Rota de Deleção de usuário */
-router.patch('/user/:id', usuarioController.alteraCampo);
+router.patch('/user/:id', [tokenMiddleware.checkToken, RoleMiddleware.checkRole(['Administrador'])], usuarioController.alteraCampo);
 /* Rota de Deleção de usuário */
-router.delete('/user/:id', usuarioController.arquivaUsuario);
+router.delete('/user/:id', [tokenMiddleware.checkToken, RoleMiddleware.checkRole(['Administrador'])], usuarioController.arquivaUsuario);
 /* Rota teste para usuarios arquivados */
-router.get('/users/arc', usuarioController.buscaUsuariosArquivados);
+router.get('/users/arc', [tokenMiddleware.checkToken, RoleMiddleware.checkRole(['Administrador'])], usuarioController.buscaUsuariosArquivados);
 /* Rota teste para um usuario arquivado */
-router.get('/user/arc/:id', usuarioController.buscaUsuarioArquivado);
-
+router.get('/user/arc/:id', [tokenMiddleware.checkToken, RoleMiddleware.checkRole(['Administrador'])], usuarioController.buscaUsuarioArquivado);
 
 /* Rota de autenticação */
 router.post('/auth/login', usuarioController.autenticaUsuario);

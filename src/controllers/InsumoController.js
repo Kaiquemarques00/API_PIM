@@ -64,7 +64,7 @@ class InsumoController {
             await db.query(
                 `INSERT INTO insumos(nome, tipo, unidade_medida, quantidade_estoque, custo_por_unidade, fornecedor_nome, observacoes)
                 VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-                [nome, tipo, medida, qtd_estoque, custo_por_unidade, fornecedor.nome, observacoes]
+                [nome, tipo, medida, qtd_estoque, custo_por_unidade, fornecedor, observacoes]
             );
 
             res.status(201).json("Novo insumo cadastrado com sucesso");
