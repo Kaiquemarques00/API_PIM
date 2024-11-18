@@ -493,6 +493,33 @@ describe("Testes para funcionalidade de alteração parcial de insumo", () => {
         expect(result.body).toBe("Fornecedor não existe");
     });
 
+    test("Não deve alterar um novo insumo sem dado do tipo string no campo nome", async () => {
+        const result = await request(app).patch('/input/10')
+            .send({ nome: 1, 
+                });
+
+        expect(result.status).toBe(422);
+        expect(result.body).toBe("O campo NOME deve ser um texto");
+    });
+
+    test("Não deve alterar um novo insumo sem dado do tipo string no campo tipo", async () => {
+        const result = await request(app).patch('/input/10')
+            .send({ tipo: 1, 
+                });
+
+        expect(result.status).toBe(422);
+        expect(result.body).toBe("O campo TIPO deve ser um texto");
+    });
+
+    test("Não deve alterar um novo insumo sem dado do tipo string no campo medida", async () => {
+        const result = await request(app).patch('/input/10')
+            .send({ medida: true, 
+                });
+
+        expect(result.status).toBe(422);
+        expect(result.body).toBe("O campo UNIDADE DE MEDIDA deve ser um texto");
+    });
+
     test("Não deve alterar insumo não encontrado", async () => {
         const result = await request(app).patch('/input/55')
             .send({ fornecedor: "EcoGenix"});
@@ -502,7 +529,7 @@ describe("Testes para funcionalidade de alteração parcial de insumo", () => {
     });
 });
 
-describe("Testes para funcionalidade de armazenamento de fornecedor", () => {
+describe("Testes para funcionalidade de deleção de insumo", () => {
     
     test.skip("Deve deletar um insumo", async () => {
         const result = await request(app).delete('/input/14');
