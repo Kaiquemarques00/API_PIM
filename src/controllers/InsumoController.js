@@ -120,6 +120,13 @@ class InsumoController {
 
         const { nome, tipo, medida, qtd_estoque, custo_por_unidade, fornecedor, observacoes } = req.body;
 
+        if (nome) if (typeof nome !== "string") return res.status(422).json("O campo NOME deve ser um texto");
+        if (tipo) if (typeof tipo !== "string") return res.status(422).json("O campo TIPO deve ser um texto");
+        if (medida) if (typeof medida !== "string") return res.status(422).json("O campo UNIDADE DE MEDIDA deve ser um texto");
+        if (qtd_estoque) if (typeof qtd_estoque !== "number") return res.status(422).json("O campo QUANTIDADE ESTOQUE deve ser um número");
+        if (custo_por_unidade) if (typeof custo_por_unidade !== "number") return res.status(422).json("O campo CUSTO POR UNIDADE deve ser um número");
+        if (fornecedor) if (typeof fornecedor !== "string") return res.status(422).json("O campo FORNECEDOR deve ser um texto");
+
         const dadosParaAtualizarInsumo = {};
         if (nome) dadosParaAtualizarInsumo.nome = nome;
         if (tipo) dadosParaAtualizarInsumo.tipo = tipo;
