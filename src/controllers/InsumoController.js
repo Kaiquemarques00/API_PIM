@@ -32,7 +32,6 @@ class InsumoController {
         }
     }
 
-
     async criaInsumo(req, res) {
         const { nome, tipo, medida, qtd_estoque, custo_por_unidade, fornecedor, observacoes } = req.body;
 
