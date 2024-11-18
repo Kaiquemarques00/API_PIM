@@ -6,6 +6,7 @@ import db from "./config/db.js";
 import usuarioRoutes from "./routes/UsuarioRoutes.js"
 import fornecedorRoutes from "./routes/FornecedorRoutes.js"
 import insumoRoutes from "./routes/InsumoRoutes.js"
+import culturaRoutes from "./routes/CulturaRoutes.js"
 
 dotenv.config();
 
@@ -17,5 +18,6 @@ db.connect();
 app.use('/', usuarioRoutes);
 app.use('/', fornecedorRoutes);
 app.use('/', insumoRoutes);
+app.use('/', culturaRoutes);
 
 export default app;
