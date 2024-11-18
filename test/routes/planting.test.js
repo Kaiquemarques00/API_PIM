@@ -5,543 +5,342 @@ const request = supertest;
 
 describe("Testes para funcionalidade de consulta de plantios", () => {
 
-    test("Deve listar todos os insumos", async () => {
-        const result = await request(app).get('/inputs');
+    test("Deve listar todos os plantios", async () => {
+        const result = await request(app).get('/plantings');
 
         expect(result.status).toBe(200);
         expect(result.body.length).toBeGreaterThan(0);
-        result.body.map((supplier) => {
-            expect(supplier).toHaveProperty('nome');
-            expect(supplier).toHaveProperty('tipo');
-            expect(supplier).toHaveProperty('unidade_medida');
-            expect(supplier).toHaveProperty('quantidade_estoque');
-            expect(supplier).toHaveProperty('custo_por_unidade');
-            expect(supplier).toHaveProperty('fornecedor_nome');
-            expect(supplier).toHaveProperty('observacoes');
+        result.body.map((planting) => {
+            expect(planting).toHaveProperty('plantio_id');
+            expect(planting).toHaveProperty('cultura_nome');
+            expect(planting).toHaveProperty('data_inicio');
+            expect(planting).toHaveProperty('previsao_colheita');
+            expect(planting).toHaveProperty('area_plantada');
+            expect(planting).toHaveProperty('status');
+            expect(planting).toHaveProperty('observacoes');
         });
     });
     
-    test("Deve listar um insumo pelo ID", async () => {
-        const result = await request(app).get('/input/10');
+    test("Deve listar um plantio pelo ID", async () => {
+        const result = await request(app).get('/planting/1');
 
         expect(result.status).toBe(200);
         expect(result.body.length).toBeGreaterThan(0);
-        result.body.map((supplier) => {
-            expect(supplier).toHaveProperty('nome');
-            expect(supplier).toHaveProperty('tipo');
-            expect(supplier).toHaveProperty('unidade_medida');
-            expect(supplier).toHaveProperty('quantidade_estoque');
-            expect(supplier).toHaveProperty('custo_por_unidade');
-            expect(supplier).toHaveProperty('fornecedor_nome');
-            expect(supplier).toHaveProperty('observacoes');
+        result.body.map((planting) => {
+            expect(planting).toHaveProperty('plantio_id');
+            expect(planting).toHaveProperty('cultura_nome');
+            expect(planting).toHaveProperty('data_inicio');
+            expect(planting).toHaveProperty('previsao_colheita');
+            expect(planting).toHaveProperty('area_plantada');
+            expect(planting).toHaveProperty('status');
+            expect(planting).toHaveProperty('observacoes');
         });
     });
 
-    test("Não deve listar nenhum insumo", async () => {
-        const result = await request(app).get('/input/50');
+    test("Não deve listar nenhum plantio", async () => {
+        const result = await request(app).get('/planting/50');
 
         expect(result.status).toBe(404);
-        expect(result.body).toBe("Nenhum insumo encontrado");
+        expect(result.body).toBe("Nenhum plantio encontrado");
     });
 });
 
 describe("Testes para funcionalidade de cadastro de plantios", () => {
     
-    test.skip("Deve cadastrar um novo insumo", async () => {
-        const result = await request(app).post('/input')
-            .send({ nome: "Semente de Manga rosa", 
-                    tipo: "Semente", 
-                    medida: "KG", 
-                    qtd_estoque: 0, 
-                    custo_por_unidade: 45.99, 
-                    fornecedor: "InovaWave",  
-                    observacoes: "Insumo criado com teste unitario"
+    test.skip("Deve cadastrar um novo plantio", async () => {
+        const result = await request(app).post('/planting')
+            .send({ cultura: "teste",
+                    area_plantada: 22.2,
+                    status: "concluido"
                 });
 
-                expect(result.body).toBe("Novo insumo cadastrado com sucesso");
+        expect(result.body).toBe("Novo plantio cadastrado com sucesso");
         expect(result.status).toBe(201);
         
     });
 
-    test("Não deve cadastrar um novo insumo sem nome", async () => {
-        const result = await request(app).post('/input')
-            .send({ tipo: "Semente", 
-                    medida: "KG", 
-                    qtd_estoque: 0, 
-                    custo_por_unidade: 45.99, 
-                    fornecedor: "InovaWave",  
-                    observacoes: "Insumo criado com teste unitario"
+    test("Não deve cadastrar um novo plantio sem cultura referenciada", async () => {
+        const result = await request(app).post('/planting')
+            .send({ area_plantada: 22.2,
+                    status: "concluido"
                 });
 
         expect(result.status).toBe(422);
-        expect(result.body).toBe("Nome do insumo deve ser preenchido");
+        expect(result.body).toBe("Nome da cultura deve ser preenchido");
     });
 
-    test("Não deve cadastrar um novo insumo sem tipo", async () => {
-        const result = await request(app).post('/input')
-            .send({ nome: "Semente", 
-                    medida: "KG", 
-                    qtd_estoque: 0, 
-                    custo_por_unidade: 45.99, 
-                    fornecedor: "InovaWave",  
-                    observacoes: "Insumo criado com teste unitario"
+    test("Não deve cadastrar um novo plantio sem area plantada", async () => {
+        const result = await request(app).post('/planting')
+            .send({ cultura: "teste",
+                    status: "concluido"
                 });
 
         expect(result.status).toBe(422);
-        expect(result.body).toBe("Tipo do insumo deve ser preenchido");
+        expect(result.body).toBe("Área plantada deve ser preenchida");
     });
 
-    test("Não deve cadastrar um novo insumo sem unidade de medida", async () => {
-        const result = await request(app).post('/input')
-            .send({ nome: "teste", 
-                    tipo: "teste", 
-                    qtd_estoque: 0, 
-                    custo_por_unidade: 45.99, 
-                    fornecedor: "InovaWave",  
-                    observacoes: "Insumo criado com teste unitario"
+    test("Não deve cadastrar um novo plantio sem status", async () => {
+        const result = await request(app).post('/planting')
+            .send({ cultura: "teste",
+                area_plantada: 22.2
                 });
 
         expect(result.status).toBe(422);
-        expect(result.body).toBe("Unidade de medida do insumo deve ser preenchido/a");
+        expect(result.body).toBe("Status do plantio deve ser preenchido");
     });
 
-    test("Não deve cadastrar um novo insumo sem quantidade em estoque", async () => {
-        const result = await request(app).post('/input')
-            .send({ nome: "teste", 
-                    tipo: "teste", 
-                    medida: "teste", 
-                    custo_por_unidade: 45.99, 
-                    fornecedor: "InovaWave",  
-                    observacoes: "Insumo criado com teste unitario"
+    test("Não deve cadastrar um novo plantio sem dado do tipo string no campo cultura", async () => {
+        const result = await request(app).post('/planting')
+            .send({ cultura: 1, 
                 });
 
         expect(result.status).toBe(422);
-        expect(result.body).toBe("Quantidade em estoque do insumo deve ser preenchido/a");
+        expect(result.body).toBe("O campo CULTURA deve ser um texto");
     });
 
-    test("Não deve cadastrar um novo insumo sem custo por unidade", async () => {
-        const result = await request(app).post('/input')
-            .send({ nome: "teste", 
-                    tipo: "teste", 
-                    medida: "teste", 
-                    qtd_estoque: 55.05, 
-                    fornecedor: "InovaWave",  
-                    observacoes: "Insumo criado com teste unitario"
+    test("Não deve cadastrar um novo plantio sem dado do tipo number no campo área plantada", async () => {
+        const result = await request(app).post('/planting')
+            .send({ cultura: 'tsete',
+                    area_plantada: [], 
                 });
 
         expect(result.status).toBe(422);
-        expect(result.body).toBe("Custo por unidade do insumo deve ser preenchido");
+        expect(result.body).toBe("O campo ÁREA PLANTADA deve ser um número");
     });
 
-    test("Não deve cadastrar um novo insumo sem nome de fornecedor", async () => {
-        const result = await request(app).post('/input')
-            .send({ nome: "teste", 
-                    tipo: "teste", 
-                    medida: "teste", 
-                    qtd_estoque: 55.05, 
-                    custo_por_unidade: 11.5,  
-                    observacoes: "Insumo criado com teste unitario"
+    test("Não deve cadastrar um novo plantio sem dado do tipo string no campo status", async () => {
+        const result = await request(app).post('/planting')
+            .send({ cultura: 'tsete',
+                    area_plantada: 11,
+                    status: 1 
                 });
 
         expect(result.status).toBe(422);
-        expect(result.body).toBe("Nome do fornecedor do insumo deve ser preenchido");
+        expect(result.body).toBe("O campo STATUS deve ser um texto");
     });
 
-    test("Não deve cadastrar um novo insumo sem dado do tipo string no campo nome", async () => {
-        const result = await request(app).post('/input')
-            .send({ nome: 1, 
+    test("Não deve cadastrar um novo insumo sem cultura existente", async () => {
+        const result = await request(app).post('/planting')
+            .send({ cultura: "testee",
+                    area_plantada: 22.2,
+                    status: "concluido"
+                });
+
+        expect(result.status).toBe(404);
+        expect(result.body).toBe("Cultura não existe");
+    });
+
+    test("Não deve cadastrar um novo insumo sem status existente", async () => {
+        const result = await request(app).post('/planting')
+            .send({ cultura: "testee",
+                    area_plantada: 22.2,
+                    status: "concluidoo"
                 });
 
         expect(result.status).toBe(422);
-        expect(result.body).toBe("O campo NOME deve ser um texto");
-    });
-
-    test("Não deve cadastrar um novo insumo sem dado do tipo string no campo tipo", async () => {
-        const result = await request(app).post('/input')
-            .send({ nome: "teste", 
-                    tipo: 123,
-                });
-
-        expect(result.status).toBe(422);
-        expect(result.body).toBe("O campo TIPO deve ser um texto");
-    });
-
-    test("Não deve cadastrar um novo insumo sem dado do tipo string no campo unidade de medida", async () => {
-        const result = await request(app).post('/input')
-            .send({ nome: "teste", 
-                    tipo: "teset",
-                    medida: [],
-
-                });
-
-        expect(result.status).toBe(422);
-        expect(result.body).toBe("O campo UNIDADE DE MEDIDA deve ser um texto");
-    });
-
-    test("Não deve cadastrar um novo insumo sem dado do tipo number no campo quantidade em estoque", async () => {
-        const result = await request(app).post('/input')
-            .send({ nome: "teste", 
-                    tipo: "teset",
-                    medida: "ML",
-                    qtd_estoque: "fsdafasdf",
-                });
-
-        expect(result.status).toBe(422);
-        expect(result.body).toBe("O campo QUANTIDADE ESTOQUE deve ser um número");
-    });
-
-    test("Não deve cadastrar um novo insumo sem dado do tipo number no campo custo por unidade", async () => {
-        const result = await request(app).post('/input')
-            .send({ nome: "teste", 
-                    tipo: "teset",
-                    medida: "ML",
-                    qtd_estoque: 12.5,
-                    custo_por_unidade: {oi: "teste"},
-                });
-
-        expect(result.status).toBe(422);
-        expect(result.body).toBe("O campo CUSTO POR UNIDADE deve ser um número");
-    });
-
-    test("Não deve cadastrar um novo insumo sem dado do tipo string no campo nome do fornecedor", async () => {
-        const result = await request(app).post('/input')
-            .send({ nome: "teste", 
-                    tipo: "teset",
-                    medida: "ML",
-                    qtd_estoque: 12.5,
-                    custo_por_unidade: 55.55,
-                    fornecedor: true
-                });
-
-        expect(result.status).toBe(422);
-        expect(result.body).toBe("O campo FORNECEDOR deve ser um texto");
-    });
-
-    test("Não deve cadastrar um novo insumo sem fornecedor existente", async () => {
-        const result = await request(app).post('/input')
-            .send({ nome: "Semente de Manga rosa", 
-                    tipo: "Semente", 
-                    medida: "KG", 
-                    qtd_estoque: 0, 
-                    custo_por_unidade: 45.99, 
-                    fornecedor: "teste",  
-                    observacoes: "Insumo criado com teste unitario"
-            });
-
-        expect(result.status).toBe(422);
-        expect(result.body).toBe("Fornecedor não existe");
+        expect(result.body).toBe("Campo que faz referência ao status do plantio incorreto");
     });
     
 });
 
 describe("Testes para funcionalidade de alteração total de plantios", () => {
-    test.skip("Deve alterar um insumo totalmente", async () => {
-        const result = await request(app).put('/input/10')
-            .send({ nome: "Semente de Manga rosa", 
-                    tipo: "Semente", 
-                    medida: "KG", 
-                    qtd_estoque: 0, 
-                    custo_por_unidade: 45.99, 
-                    fornecedor: "InovaWave",  
-                    observacoes: "Insumo criado com teste unitario"
+    test.skip("Deve alterar um plantio", async () => {
+        const result = await request(app).put('/planting/3')
+            .send({ cultura: "teste",
+                    area_plantada: 22.2,
+                    status: "concluido"
                 });
-        expect(result.body).toBe("Insumo alterado com sucesso");
+
+        expect(result.body).toBe("Plantio alterado com sucesso");
         expect(result.status).toBe(200);
+        
     });
 
-    test("Não deve alterar um novo insumo sem nome", async () => {
-        const result = await request(app).put('/input/10')
-            .send({ tipo: "Semente", 
-                    medida: "KG", 
-                    qtd_estoque: 0, 
-                    custo_por_unidade: 45.99, 
-                    fornecedor: "InovaWave",  
-                    observacoes: "Insumo criado com teste unitario"
+    test("Não deve alterar um plantio sem cultura referenciada", async () => {
+        const result = await request(app).put('/planting/3')
+            .send({ area_plantada: 22.2,
+                    status: "concluido"
                 });
 
         expect(result.status).toBe(422);
-        expect(result.body).toBe("Nome do insumo deve ser preenchido");
+        expect(result.body).toBe("Nome da cultura deve ser preenchido");
     });
 
-    test("Não deve alterar um novo insumo sem tipo", async () => {
-        const result = await request(app).put('/input/10')
-            .send({ nome: "Semente", 
-                    medida: "KG", 
-                    qtd_estoque: 0, 
-                    custo_por_unidade: 45.99, 
-                    fornecedor: "InovaWave",  
-                    observacoes: "Insumo criado com teste unitario"
+    test("Não deve alterar um plantio sem area plantada", async () => {
+        const result = await request(app).put('/planting/3')
+            .send({ cultura: "teste",
+                    status: "concluido"
                 });
 
         expect(result.status).toBe(422);
-        expect(result.body).toBe("Tipo do insumo deve ser preenchido");
+        expect(result.body).toBe("Área plantada deve ser preenchida");
     });
 
-    test("Não deve alterar um novo insumo sem unidade de medida", async () => {
-        const result = await request(app).put('/input/10')
-            .send({ nome: "teste", 
-                    tipo: "teste", 
-                    qtd_estoque: 0, 
-                    custo_por_unidade: 45.99, 
-                    fornecedor: "InovaWave",  
-                    observacoes: "Insumo criado com teste unitario"
+    test("Não deve alterar um plantio sem status", async () => {
+        const result = await request(app).put('/planting/3')
+            .send({ cultura: "teste",
+                area_plantada: 22.2
                 });
 
         expect(result.status).toBe(422);
-        expect(result.body).toBe("Unidade de medida do insumo deve ser preenchido/a");
+        expect(result.body).toBe("Status do plantio deve ser preenchido");
     });
 
-    test("Não deve alterar um novo insumo sem quantidade em estoque", async () => {
-        const result = await request(app).put('/input/10')
-            .send({ nome: "teste", 
-                    tipo: "teste", 
-                    medida: "teste", 
-                    custo_por_unidade: 45.99, 
-                    fornecedor: "InovaWave",  
-                    observacoes: "Insumo criado com teste unitario"
+    test("Não deve alterar um plantio sem dado do tipo string no campo cultura", async () => {
+        const result = await request(app).put('/planting/3')
+            .send({ cultura: 1, 
                 });
 
         expect(result.status).toBe(422);
-        expect(result.body).toBe("Quantidade em estoque do insumo deve ser preenchido/a");
+        expect(result.body).toBe("O campo CULTURA deve ser um texto");
     });
 
-    test("Não deve alterar um novo insumo sem custo por unidade", async () => {
-        const result = await request(app).put('/input/10')
-            .send({ nome: "teste", 
-                    tipo: "teste", 
-                    medida: "teste", 
-                    qtd_estoque: 55.05, 
-                    fornecedor: "InovaWave",  
-                    observacoes: "Insumo criado com teste unitario"
+    test("Não deve alterar um plantio sem dado do tipo number no campo área plantada", async () => {
+        const result = await request(app).put('/planting/3')
+            .send({ cultura: 'tsete',
+                    area_plantada: [], 
                 });
 
         expect(result.status).toBe(422);
-        expect(result.body).toBe("Custo por unidade do insumo deve ser preenchido");
+        expect(result.body).toBe("O campo ÁREA PLANTADA deve ser um número");
     });
 
-    test("Não deve alterar um novo insumo sem nome de fornecedor", async () => {
-        const result = await request(app).put('/input/10')
-            .send({ nome: "teste", 
-                    tipo: "teste", 
-                    medida: "teste", 
-                    qtd_estoque: 55.05, 
-                    custo_por_unidade: 11.5,  
-                    observacoes: "Insumo criado com teste unitario"
+    test("Não deve alterar um plantio sem dado do tipo string no campo status", async () => {
+        const result = await request(app).put('/planting/3')
+            .send({ cultura: 'tsete',
+                    area_plantada: 11,
+                    status: 1 
                 });
 
         expect(result.status).toBe(422);
-        expect(result.body).toBe("Nome do fornecedor do insumo deve ser preenchido");
+        expect(result.body).toBe("O campo STATUS deve ser um texto");
     });
 
-    test("Não deve alterar um novo insumo sem dado do tipo string no campo nome", async () => {
-        const result = await request(app).put('/input/10')
-            .send({ nome: 1, 
+    test("Não deve alterar um insumo sem cultura existente", async () => {
+        const result = await request(app).put('/planting/3')
+            .send({ cultura: "testee",
+                    area_plantada: 22.2,
+                    status: "concluido"
                 });
-
-        expect(result.status).toBe(422);
-        expect(result.body).toBe("O campo NOME deve ser um texto");
-    });
-
-    test("Não deve alterar um novo insumo sem dado do tipo string no campo tipo", async () => {
-        const result = await request(app).put('/input/10')
-            .send({ nome: "teste", 
-                    tipo: 123,
-                });
-
-        expect(result.status).toBe(422);
-        expect(result.body).toBe("O campo TIPO deve ser um texto");
-    });
-
-    test("Não deve alterar um novo insumo sem dado do tipo string no campo unidade de medida", async () => {
-        const result = await request(app).put('/input/10')
-            .send({ nome: "teste", 
-                    tipo: "teset",
-                    medida: [],
-
-                });
-
-        expect(result.status).toBe(422);
-        expect(result.body).toBe("O campo UNIDADE DE MEDIDA deve ser um texto");
-    });
-
-    test("Não deve alterar um novo insumo sem dado do tipo number no campo quantidade em estoque", async () => {
-        const result = await request(app).put('/input/10')
-            .send({ nome: "teste", 
-                    tipo: "teset",
-                    medida: "ML",
-                    qtd_estoque: "fsdafasdf",
-                });
-
-        expect(result.status).toBe(422);
-        expect(result.body).toBe("O campo QUANTIDADE ESTOQUE deve ser um número");
-    });
-
-    test("Não deve alterar um novo insumo sem dado do tipo number no campo custo por unidade", async () => {
-        const result = await request(app).put('/input/10')
-            .send({ nome: "teste", 
-                    tipo: "teset",
-                    medida: "ML",
-                    qtd_estoque: 12.5,
-                    custo_por_unidade: {oi: "teste"},
-                });
-
-        expect(result.status).toBe(422);
-        expect(result.body).toBe("O campo CUSTO POR UNIDADE deve ser um número");
-    });
-
-    test("Não deve alterar um novo insumo sem dado do tipo string no campo nome do fornecedor", async () => {
-        const result = await request(app).put('/input/10')
-            .send({ nome: "teste", 
-                    tipo: "teset",
-                    medida: "ML",
-                    qtd_estoque: 12.5,
-                    custo_por_unidade: 55.55,
-                    fornecedor: true
-                });
-
-        expect(result.status).toBe(422);
-        expect(result.body).toBe("O campo FORNECEDOR deve ser um texto");
-    });
-
-    test("Não deve alterar um novo insumo sem fornecedor existente", async () => {
-        const result = await request(app).put('/input/10')
-            .send({ nome: "Semente de Manga rosa", 
-                    tipo: "Semente", 
-                    medida: "KG", 
-                    qtd_estoque: 0, 
-                    custo_por_unidade: 45.99, 
-                    fornecedor: "teste",  
-                    observacoes: "Insumo criado com teste unitario"
-            });
 
         expect(result.status).toBe(404);
-        expect(result.body).toBe("Fornecedor não existe");
+        expect(result.body).toBe("Cultura não existe");
     });
 
-    test("Não deve alterar um insumo inexistente", async () => {
-        const result = await request(app).put('/input/55')
-            .send({ nome: "Semente de Manga rosa", 
-                    tipo: "Semente", 
-                    medida: "KG", 
-                    qtd_estoque: 0, 
-                    custo_por_unidade: 45.99, 
-                    fornecedor: "EcoGenix",  
-                    observacoes: "Insumo criado com teste unitario"
-            });
+    test("Não deve alterar um insumo sem status existente", async () => {
+        const result = await request(app).put('/planting/3')
+            .send({ cultura: "testee",
+                    area_plantada: 22.2,
+                    status: "concluidoo"
+                });
 
-        expect(result.status).toBe(404);
-        expect(result.body).toBe("Insumo não encontrado");
+        expect(result.status).toBe(422);
+        expect(result.body).toBe("Campo que faz referência ao status do plantio incorreto");
     });
 
 });
 
 describe("Testes para funcionalidade de alteração parcial de plantios", () => {
     
-    test("Deve alterar nome do insumo com sucesso", async () => {
-        const result = await request(app).patch('/input/10')
-            .send({ nome: 'teste'});
+    test("Deve alterar cultura do plantio com sucesso", async () => {
+        const result = await request(app).patch('/planting/3')
+            .send({ cultura: 'teste'});
 
         expect(result.status).toBe(200);
-        expect(result.body).toBe("Insumo alterado com sucesso");
+        expect(result.body).toBe("Plantio alterado com sucesso");
     });
 
-    test("Deve alterar tipo do insumo com sucesso", async () => {
-        const result = await request(app).patch('/input/10')
-            .send({ tipo: 'teste'});
+    test("Deve alterar area plantada do plantio com sucesso", async () => {
+        const result = await request(app).patch('/planting/3')
+            .send({ area_plantada: 12.6});
 
         expect(result.status).toBe(200);
-        expect(result.body).toBe("Insumo alterado com sucesso");
+        expect(result.body).toBe("Plantio alterado com sucesso");
     });
 
-    test("Deve alterar unidade de medida do insumo com sucesso", async () => {
-        const result = await request(app).patch('/input/10')
-            .send({ medida: 'teste'});
+    test("Deve alterar status do plantio com sucesso", async () => {
+        const result = await request(app).patch('/planting/3')
+            .send({ status: 'concluido'});
 
         expect(result.status).toBe(200);
-        expect(result.body).toBe("Insumo alterado com sucesso");
+        expect(result.body).toBe("Plantio alterado com sucesso");
     });
 
-    test("Deve alterar quantidade em estoque do insumo com sucesso", async () => {
-        const result = await request(app).patch('/input/10')
-            .send({ qtd_estoque: 1.26});
 
-        expect(result.status).toBe(200);
-        expect(result.body).toBe("Insumo alterado com sucesso");
-    });
-
-    test("Deve alterar custo por unidade do insumo com sucesso", async () => {
-        const result = await request(app).patch('/input/10')
-            .send({ custo_por_unidade: 26.26});
-
-        expect(result.status).toBe(200);
-        expect(result.body).toBe("Insumo alterado com sucesso");
-    });
-
-    test("Deve alterar nome do fornecedor do insumo com sucesso", async () => {
-        const result = await request(app).patch('/input/10')
-            .send({ fornecedor: "EcoGenix"});
-
-        expect(result.status).toBe(200);
-        expect(result.body).toBe("Insumo alterado com sucesso");
-    });
-
-    test("Não deve alterar nome do fornecedor do insumo", async () => {
-        const result = await request(app).patch('/input/10')
-            .send({ fornecedor: "EcoGeni"});
+    test("Não deve alterar nome da cultura do plantio", async () => {
+        const result = await request(app).patch('/planting/3')
+            .send({ cultura: "EcoGeni"});
 
         expect(result.status).toBe(404);
-        expect(result.body).toBe("Fornecedor não existe");
+        expect(result.body).toBe("Cultura não existe");
     });
 
-    test("Não deve alterar um novo insumo sem dado do tipo string no campo nome", async () => {
-        const result = await request(app).patch('/input/10')
-            .send({ nome: 1, 
+    test("Não deve alterar um plantio sem dado do tipo string no campo cultura", async () => {
+        const result = await request(app).patch('/planting/3')
+            .send({ cultura: 1, 
                 });
 
         expect(result.status).toBe(422);
-        expect(result.body).toBe("O campo NOME deve ser um texto");
+        expect(result.body).toBe("O campo CULTURA deve ser um texto");
     });
 
-    test("Não deve alterar um novo insumo sem dado do tipo string no campo tipo", async () => {
-        const result = await request(app).patch('/input/10')
-            .send({ tipo: 1, 
+    test("Não deve alterar um plantio sem dado do tipo number no campo área plantada", async () => {
+        const result = await request(app).patch('/planting/3')
+            .send({ area_plantada: 'oi', 
                 });
 
         expect(result.status).toBe(422);
-        expect(result.body).toBe("O campo TIPO deve ser um texto");
+        expect(result.body).toBe("O campo ÁREA PLANTADA deve ser um número");
     });
 
-    test("Não deve alterar um novo insumo sem dado do tipo string no campo medida", async () => {
-        const result = await request(app).patch('/input/10')
-            .send({ medida: true, 
+    test("Não deve alterar um plantio sem dado do tipo string no status", async () => {
+        const result = await request(app).patch('/planting/3')
+            .send({ status: true, 
                 });
 
         expect(result.status).toBe(422);
-        expect(result.body).toBe("O campo UNIDADE DE MEDIDA deve ser um texto");
+        expect(result.body).toBe("O campo STATUS deve ser um texto");
+    });
+
+    test("Não deve alterar um plantio com dado inserido em status incorreto", async () => {
+        const result = await request(app).patch('/planting/3')
+            .send({ status: 'concluidooo', 
+                });
+
+        expect(result.status).toBe(422);
+        expect(result.body).toBe("Campo que faz referência ao status do plantio incorreto");
+    });
+
+    test("Não deve alterar plantio sem dados para atualizar", async () => {
+        const result = await request(app).patch('/planting/3')
+            .send();
+
+        expect(result.status).toBe(400);
+        expect(result.body).toBe("Nenhum campo para atualizar");
     });
 
     test("Não deve alterar insumo não encontrado", async () => {
-        const result = await request(app).patch('/input/55')
-            .send({ fornecedor: "EcoGenix"});
+        const result = await request(app).patch('/planting/55')
+            .send({ cultura: "teste"});
 
         expect(result.status).toBe(404);
-        expect(result.body).toBe("Insumo não existe");
+        expect(result.body).toBe("Plantio não existe");
     });
 });
 
 describe("Testes para funcionalidade de deleção de plantios", () => {
     
-    test.skip("Deve deletar um insumo", async () => {
-        const result = await request(app).delete('/input/14');
+    test.skip("Deve deletar um plantio", async () => {
+        const result = await request(app).delete('/planting/2');
 
         expect(result.status).toBe(200);
-        expect(result.body).toBe("Insumo deletado com sucesso");
+        expect(result.body).toBe("Plantio deletado com sucesso");
     });
 
-    test("Não deve deletar um insumo não encontrado", async () => {
-        const result = await request(app).delete('/input/55');
+    test("Não deve deletar um plantio não encontrado", async () => {
+        const result = await request(app).delete('/planting/55');
 
         expect(result.status).toBe(404);
-        expect(result.body).toBe("Nenhum insumo encontrado");
+        expect(result.body).toBe("Nenhum plantio encontrado");
     });
 });
