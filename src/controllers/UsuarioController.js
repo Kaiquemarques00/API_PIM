@@ -300,7 +300,7 @@ class UsuarioController {
     }
 
     if (email) {
-      const emailFormat = email.charAt(0).toUpperCase() + email.slice(1);
+      emailFormat = email.charAt(0).toUpperCase() + email.slice(1);
     }
 
     if (senha) {
