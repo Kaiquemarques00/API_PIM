@@ -108,6 +108,7 @@ class UsuarioController {
 
       // Formata para a primeira letra do tipo de usuario ser maiuscula
       const roleFormat = role.charAt(0).toUpperCase() + role.slice(1);
+      const emailFormat = email.charAt(0).toUpperCase() + email.slice(1);
 
       // Verifica se os tipos de usuarios correspondem aos tipos pré definidos
       if (
@@ -121,7 +122,7 @@ class UsuarioController {
       // Consulta no banco de dados através do email
       const checkUsuarioExiste = await db.query(
         "SELECT * FROM usuarios WHERE email = $1",
-        [email]
+        [emailFormat]
       );
 
       // Verifica se o usuário que vai ser criado já existe
@@ -135,7 +136,7 @@ class UsuarioController {
       // Cria usuário no banco de dados
       await db.query(
         "INSERT INTO usuarios(nome, email, senha, tipo_usuario) VALUES ($1, $2, $3, $4)",
-        [String(nome), String(email), hashedSenha, String(roleFormat)]
+        [String(nome), String(emailFormat), hashedSenha, String(roleFormat)]
       );
 
       // Feedback de sucesso
@@ -235,6 +236,8 @@ class UsuarioController {
 
       // Formata dados de tipo de usuario
       const roleFormat = role.charAt(0).toUpperCase() + role.slice(1);
+      const emailFormat = email.charAt(0).toUpperCase() + email.slice(1);
+
       // Verifica se tipo de usuario esta correto
       if (
         roleFormat != "Administrador" &&
@@ -247,7 +250,7 @@ class UsuarioController {
       // Consulta usuario no banco pelo email
       const checkUsuarioExiste = await db.query(
         "SELECT * FROM usuarios WHERE email = $1",
-        [email]
+        [emailFormat]
       );
 
       // Verifica se email ja foi cadastrado
@@ -261,7 +264,7 @@ class UsuarioController {
       // Atualiza usuario no banco de dados
       await db.query(
         "UPDATE usuarios SET nome = $1, email = $2, senha = $3, tipo_usuario = $4 WHERE usuario_id = $5",
-        [nome, email, hashedSenha, roleFormat, id]
+        [nome, emailFormat, hashedSenha, roleFormat, id]
       );
 
       // Mensagem de feedback
@@ -275,6 +278,7 @@ class UsuarioController {
     const id = req.params.id;
     let hashedSenha;
     let roleFormat;
+    let emailFormat;
 
     const { nome, email, senha, role } = req.body;
 
@@ -295,6 +299,10 @@ class UsuarioController {
       roleFormat = role.charAt(0).toUpperCase() + role.slice(1);
     }
 
+    if (email) {
+      const emailFormat = email.charAt(0).toUpperCase() + email.slice(1);
+    }
+
     if (senha) {
       if (senha.length < 8)
         return res.status(422).json("A senha deve ter mais de 8 caracteres");
@@ -311,10 +319,11 @@ class UsuarioController {
           .json("Campo que faz referência ao nivel de usuário incorreto");
     }
 
+
     // Cria um objeto que recebe o dado que estiver preenchido para atualização
     const dadosParaAtualizar = {};
     if (nome) dadosParaAtualizar.nome = nome;
-    if (email) dadosParaAtualizar.email = email;
+    if (emailFormat) dadosParaAtualizar.email = emailFormat;
     if (senha) dadosParaAtualizar.senha = hashedSenha;
     if (role) dadosParaAtualizar.tipo_usuario = roleFormat;
 
@@ -335,7 +344,7 @@ class UsuarioController {
       // consulta usuario
       const checkUserExists = await db.query(
         "SELECT * FROM usuarios WHERE email = $1",
-        [email]
+        [emailFormat]
       );
 
       if (checkUserExists.rows.length > 0)
@@ -365,10 +374,17 @@ class UsuarioController {
     if (!email) return res.status(422).json("Email é obrigatório");
     if (!senha) return res.status(422).json("Senha é obrigatória");
 
+    const primeiraLetraEmail = email.charAt(0);
+    let emailFormatado = email.charAt(0).toUpperCase() + email.slice(1);;
+    
+    if (primeiraLetraEmail === primeiraLetraEmail.toLowerCase()) {
+      emailFormatado = email.charAt(0).toUpperCase() + email.slice(1);
+    }
+
     // Consulta usuario
     const checkUsuario = await db.query(
       "SELECT * FROM usuarios WHERE email = $1",
-      [email]
+      [emailFormatado]
     );
 
     // Verifica se usuario existe
