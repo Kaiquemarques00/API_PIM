@@ -59,8 +59,8 @@ class PlantioController {
             const cicloCultura = (await db.query(`SELECT ciclo_cultivo_dias FROM culturas WHERE nome = $1`, [cultura]));
             const duracaoCiclo = cicloCultura.rows[0].ciclo_cultivo_dias;
 
-            const inicio_plantio = new Date().toLocaleDateString('pt-br')
-            const fim_plantio = calculaColheita(dataAtual, duracaoCiclo).toLocaleDateString('pt-br');
+            const inicio_plantio = new Date().toLocaleDateString('en-us')
+            const fim_plantio = calculaColheita(dataAtual, duracaoCiclo).toLocaleDateString('en-us');
 
             await db.query(
                 `INSERT INTO plantios(cultura_nome, data_inicio, previsao_colheita, area_plantada, status, observacoes)
@@ -102,8 +102,8 @@ class PlantioController {
             const cicloCultura = (await db.query(`SELECT ciclo_cultivo_dias FROM culturas WHERE nome = $1`, [cultura]));
             const duracaoCiclo = cicloCultura.rows[0].ciclo_cultivo_dias;
 
-            const inicio_plantio = new Date().toLocaleDateString('pt-br')
-            const fim_plantio = calculaColheita(dataAtual, duracaoCiclo).toLocaleDateString('pt-br');
+            const inicio_plantio = new Date().toLocaleDateString('en-us')
+            const fim_plantio = calculaColheita(dataAtual, duracaoCiclo).toLocaleDateString('en-us');
     
             await db.query(
                 "UPDATE plantios SET cultura_nome = $1, data_inicio = $2, previsao_colheita = $3, area_plantada = $4, status = $5, observacoes = $6 WHERE plantio_id = $7",
