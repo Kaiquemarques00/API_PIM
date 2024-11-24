@@ -33,42 +33,34 @@ class ColheitaController {
     }
 
     async criaColheita(req, res) {
-        const { cultura, area_plantada, status, observacoes } = req.body;
+        const { plantio_id, qtd_colhida, observacoes } = req.body;
 
-        if(!cultura) return res.status(422).json("Nome da cultura deve ser preenchido");
-        if(typeof cultura !== "string") return res.status(422).json("O campo CULTURA deve ser um texto");
+        if(!plantio_id) return res.status(422).json("ID da colheita deve ser preenchido");
+        if(typeof plantio_id !== "number") return res.status(422).json("O campo PLANTIO ID deve ser um número");
 
-        if(!area_plantada) return res.status(422).json("Área plantada deve ser preenchida");
-        if(typeof area_plantada !== "number") return res.status(422).json("O campo ÁREA PLANTADA deve ser um número");
-
-        if(!status) return res.status(422).json("Status do plantio deve ser preenchido");
-        if(typeof status !== "string") return res.status(422).json("O campo STATUS deve ser um texto");
-
-        const statusFormat = status.charAt(0).toUpperCase() + status.slice(1);
-        if (statusFormat != "Planejado" && statusFormat != "Em andamento" && statusFormat != "Concluido" && statusFormat != "Cancelado") return res.status(422).json("Campo que faz referência ao status do plantio incorreto");
-
-        const calculaColheita = (data, dias) => new Date(data.setDate(data.getDate() + dias));
-        const dataAtual = new Date();
+        if(!qtd_colhida) return res.status(422).json("Quantidade colhida deve ser preenchida");
+        if(typeof qtd_colhida !== "number") return res.status(422).json("O campo QUANTIDADE COLHIDA deve ser um número");
         
         try {
-            const checaCultura = await db.query("SELECT nome FROM culturas WHERE nome = $1", [cultura]);
-            const culturaResult = checaCultura.rows;
+            const checaPlantio = await db.query("SELECT * FROM plantios WHERE plantio_id = $1", [plantio_id]);
+            const plantioResult = checaPlantio.rows;
 
-            if(culturaResult.length === 0) return res.status(404).json("Cultura não existe");
+            if(plantioResult.length === 0) return res.status(404).json("Plantio não existe");
 
-            const cicloCultura = (await db.query(`SELECT ciclo_cultivo_dias FROM culturas WHERE nome = $1`, [cultura]));
-            const duracaoCiclo = cicloCultura.rows[0].ciclo_cultivo_dias;
-
-            const inicio_plantio = new Date().toLocaleDateString('en-us')
-            const fim_plantio = calculaColheita(dataAtual, duracaoCiclo).toLocaleDateString('en-us');
+            const dataAtual = new Date()
 
             await db.query(
-                `INSERT INTO plantios(cultura_nome, data_inicio, previsao_colheita, area_plantada, status, observacoes)
-                VALUES($1, $2, $3, $4, $5, $6)`,
-                [cultura, inicio_plantio, fim_plantio, area_plantada, statusFormat, observacoes]
+                `INSERT INTO colheitas(plantio_id, data_colheita, quantidade_colhida, observacoes)
+                VALUES($1, $2, $3, $4)`,
+                [plantio_id, dataAtual, qtd_colhida, observacoes]
             );
 
-            res.status(201).json("Novo plantio cadastrado com sucesso");
+            await db.query(
+                "UPDATE plantios SET status = $1 WHERE plantio_id = $2",
+                ["Concluido", plantio_id]
+            );
+
+            res.status(201).json("Nova colheita cadastrada com sucesso");
         } catch (error) {
             console.log(error);
         }
@@ -76,96 +68,77 @@ class ColheitaController {
 
     async alteraRegistro(req, res) {
         const id = req.params.id;
-        const { cultura, area_plantada, status, observacoes } = req.body;
+        const { plantio_id, qtd_colhida, observacoes } = req.body;
 
-        if(!cultura) return res.status(422).json("Nome da cultura deve ser preenchido");
-        if(typeof cultura !== "string") return res.status(422).json("O campo CULTURA deve ser um texto");
+        if(!plantio_id) return res.status(422).json("ID da colheita deve ser preenchido");
+        if(typeof plantio_id !== "number") return res.status(422).json("O campo PLANTIO ID deve ser um número");
 
-        if(!area_plantada) return res.status(422).json("Área plantada deve ser preenchida");
-        if(typeof area_plantada !== "number") return res.status(422).json("O campo ÁREA PLANTADA deve ser um número");
-
-        if(!status) return res.status(422).json("Status do plantio deve ser preenchido");
-        if(typeof status !== "string") return res.status(422).json("O campo STATUS deve ser um texto");
-
-        const statusFormat = status.charAt(0).toUpperCase() + status.slice(1);
-        if (statusFormat != "Planejado" && statusFormat != "Em andamento" && statusFormat != "Concluido" && statusFormat != "Cancelado") return res.status(422).json("Campo que faz referência ao status do plantio incorreto");
-
-        const calculaColheita = (data, dias) => new Date(data.setDate(data.getDate() + dias));
-        const dataAtual = new Date();
+        if(!qtd_colhida) return res.status(422).json("Quantidade colhida deve ser preenchida");
+        if(typeof qtd_colhida !== "number") return res.status(422).json("O campo QUANTIDADE COLHIDA deve ser um número");
         
         try {
-            const checaCultura = await db.query("SELECT nome FROM culturas WHERE nome = $1", [cultura]);
-            const culturaResult = checaCultura.rows;
+            const checaPlantio = await db.query("SELECT * FROM plantios WHERE plantio_id = $1", [plantio_id]);
+            const plantioResult = checaPlantio.rows;
 
-            if(culturaResult.length === 0) return res.status(404).json("Cultura não existe");
+            if(plantioResult.length === 0) return res.status(404).json("Plantio não existe");
 
-            const cicloCultura = (await db.query(`SELECT ciclo_cultivo_dias FROM culturas WHERE nome = $1`, [cultura]));
-            const duracaoCiclo = cicloCultura.rows[0].ciclo_cultivo_dias;
-
-            const inicio_plantio = new Date().toLocaleDateString('en-us')
-            const fim_plantio = calculaColheita(dataAtual, duracaoCiclo).toLocaleDateString('en-us');
-    
+            const dataAtual = new Date()
             await db.query(
-                "UPDATE plantios SET cultura_nome = $1, data_inicio = $2, previsao_colheita = $3, area_plantada = $4, status = $5, observacoes = $6 WHERE plantio_id = $7",
-                [cultura, inicio_plantio, fim_plantio, area_plantada, statusFormat, observacoes, id]
+                "UPDATE colheitas SET plantio_id = $1, data_colheita = $2, quantidade_colhida = $3, observacoes = $4 WHERE colheita_id = $5",
+                [plantio_id, dataAtual, qtd_colhida, observacoes, id]
             );
-        
-            res.status(200).json("Plantio alterado com sucesso");
-          } catch (error) {
+
+            await db.query(
+                "UPDATE plantios SET status = $1 WHERE plantio_id = $2",
+                ["Concluido", plantio_id]
+            );
+
+            res.status(201).json("Nova colheita cadastrada com sucesso");
+        } catch (error) {
             console.log(error);
-          }
+        }
     }
 
     async alteraCampo(req, res) {
         const id = req.params.id;
-        let statusFormat;
+        const { plantio_id, qtd_colhida, observacoes } = req.body;
 
-        const { cultura, area_plantada, status, observacoes } = req.body;
+        if (plantio_id) if(typeof plantio_id !== "number") return res.status(422).json("O campo PLANTIO ID deve ser um número");
 
-        if (cultura) if(typeof cultura !== "string") return res.status(422).json("O campo CULTURA deve ser um texto");
+        if (qtd_colhida) if(typeof qtd_colhida !== "number") return res.status(422).json("O campo QUANTIDADE COLHIDA deve ser um número");
 
-        if (area_plantada) if(typeof area_plantada !== "number") return res.status(422).json("O campo ÁREA PLANTADA deve ser um número");
-
-        if (status) if(typeof status !== "string") return res.status(422).json("O campo STATUS deve ser um texto");
-
-        if (status) {
-            statusFormat = status.charAt(0).toUpperCase() + status.slice(1);
-            if (statusFormat != "Planejado" && statusFormat != "Em andamento" && statusFormat != "Concluido" && statusFormat != "Cancelado") return res.status(422).json("Campo que faz referência ao status do plantio incorreto");
-        }
-
-        const dadosParaAtualizarPlantio = {};
-        if (area_plantada) dadosParaAtualizarPlantio.area_plantada = area_plantada;
-        if (status) dadosParaAtualizarPlantio.status = statusFormat;
-        if (cultura) {
+        const dadosParaAtualizarColheita = {};
+        if (qtd_colhida) dadosParaAtualizarColheita.quantidade_colhida = qtd_colhida;
+        if (plantio_id) {
             try {
-                const checaCultura = await db.query("SELECT nome FROM culturas WHERE nome = $1", [cultura]);
-                const culturaResult = checaCultura.rows;
+                const checaPlantio = await db.query("SELECT * FROM plantios WHERE plantio_id = $1", [plantio_id]);
+                const plantioResult = checaPlantio.rows;
     
-                if(culturaResult.length === 0) return res.status(404).json("Cultura não existe");
+                if(plantioResult.length === 0) return res.status(404).json("Plantio não existe");
             } catch (error) {
                 console.log(error);
             }
-            dadosParaAtualizarPlantio.cultura_nome = cultura;
+            dadosParaAtualizarColheita.plantio_id = plantio_id;
         }
-        if (observacoes) dadosParaAtualizarPlantio.observacoes = observacoes;
+        if (observacoes) dadosParaAtualizarColheita.observacoes = observacoes;
     
-        if (Object.keys(dadosParaAtualizarPlantio).length === 0)
+        if (Object.keys(dadosParaAtualizarColheita).length === 0)
           return res.status(400).json("Nenhum campo para atualizar");
     
-        const campos = Object.keys(dadosParaAtualizarPlantio);
-        const valores = Object.values(dadosParaAtualizarPlantio);
+        const campos = Object.keys(dadosParaAtualizarColheita);
+        const valores = Object.values(dadosParaAtualizarColheita);
     
         const setClausula = campos.map((campo, index) => `${campo} = $${index + 1}`).join(', ');
     
         try {
             const result = await db.query(
-                `UPDATE plantios SET ${setClausula} WHERE plantio_id = $${campos.length + 1} RETURNING *`,
+                `UPDATE colheitas SET ${setClausula} WHERE colheita_id = $${campos.length + 1} RETURNING *`,
                 [...valores, id]
             );
       
-            if (result.rows.length === 0) return res.status(404).json('Plantio não existe');
+            if (result.rows.length === 0) return res.status(404).json('Colheita não existe');
     
-            res.status(200).json("Plantio alterado com sucesso");
+            res.status(200).json("Colheita alterada com sucesso");
         } catch (error) {
             console.log(error);
         }
@@ -175,15 +148,15 @@ class ColheitaController {
         const id = req.params.id;    
 
         try {
-            const require = await db.query("SELECT * FROM plantios WHERE plantio_id = $1", [id]);
+            const require = await db.query("SELECT * FROM colheitas WHERE colheita_id = $1", [id]);
 
-            const plantio = require.rows;
+            const colheita = require.rows;
 
-            if(plantio.length === 0) return res.status(404).json("Nenhum plantio encontrado");
+            if(colheita.length === 0) return res.status(404).json("Nenhuma colheita encontrada");
 
-            await db.query("DELETE FROM plantios WHERE plantio_id = $1", [id]);
+            await db.query("DELETE FROM colheitas WHERE colheita_id = $1", [id]);
 
-            res.status(200).json("Plantio deletado com sucesso");
+            res.status(200).json("Colheita deletada com sucesso");
         } catch (error) {
             console.log(error);
         }
