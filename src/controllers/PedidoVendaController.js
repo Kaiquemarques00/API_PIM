@@ -45,7 +45,16 @@ class PedidoVendaController {
         const statusFormat = status.charAt(0).toUpperCase() + status.slice(1);
         if (statusFormat != "Pendente" && statusFormat != "Em andamento" && statusFormat != "Concluido") return res.status(422).json("Campo que faz referência ao status do pedido incorreto");
         
-        const dataAtual = new Date();
+        if(!cultura) return res.status(422).json("Nome da cultura deve ser preenchido");
+        if(typeof cultura !== "string") return res.status(422).json("O campo CULTURA deve ser um texto");
+
+        if(!quantidade) return res.status(422).json("Quantidade deve ser preenchido");
+        if(typeof quantidade !== "number") return res.status(422).json("O campo QUANTIDADE deve ser um número");
+
+        if(!preco_unitario) return res.status(422).json("Preço deve ser preenchido");
+        if(typeof preco_unitario !== "number") return res.status(422).json("O campo PREÇO UNITÁRIO deve ser um número");
+
+        const dataAtual = new Date()
         
         try {
             const checaUsuario = await db.query("SELECT * FROM usuarios WHERE usuario_id = $1", [usuario_id]);
@@ -58,24 +67,13 @@ class PedidoVendaController {
 
             if(culturaResult.length === 0) return res.status(404).json("Cultura não existe");
 
-                if(!quantidade) return res.status(422).json("Quantidade deve ser preenchido");
-                if(typeof quantidade !== "number") return res.status(422).json("O campo QUANTIDADE deve ser um número");
-
-                if(!preco_unitario) return res.status(422).json("Preço deve ser preenchido");
-                if(typeof preco_unitario !== "number") return res.status(422).json("O campo PREÇO UNITÁRIO deve ser um número");  
-
-                try {
-                    await db.query(
-                        `INSERT INTO produtos_vendidos(pedido_id, cultura_nome, quantidade, preco_unitario)
-                        VALUES($1, $2, $3, $4) RETURNING *`,
-                        [pedido.pedido_id, cultura, quantidade, preco_unitario]
-                    );
-                } catch (error) {
-                    console.log(error);
-                }
-
-                res.status(201).json("Novo produto vendido cadastrado com sucesso");
-            }
+            await db.query(
+                `INSERT INTO pedidos(data_pedido, status, usuario_id, cultura_nome, quantidade, preco_unitario, observacoes)
+                VALUES($1, $2, $3, $4, $5, $6, $7)`,
+                [dataAtual, statusFormat, usuario_id, cultura, quantidade, preco_unitario, observacoes]
+            );
+            
+            res.status(201).json("Novo pedido cadastrado")
         } catch (error) {
             console.log(error);
         }
