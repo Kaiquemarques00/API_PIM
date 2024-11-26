@@ -76,6 +76,15 @@ class PedidoVendaController {
         const statusFormat = status.charAt(0).toUpperCase() + status.slice(1);
         if (statusFormat != "Pendente" && statusFormat != "Em andamento" && statusFormat != "Concluido") return res.status(422).json("Campo que faz referência ao status do pedido incorreto");
         
+        if(!cultura) return res.status(422).json("Nome da cultura deve ser preenchido");
+        if(typeof cultura !== "string") return res.status(422).json("O campo CULTURA deve ser um texto");
+
+        if(!quantidade) return res.status(422).json("Quantidade deve ser preenchido");
+        if(typeof quantidade !== "number") return res.status(422).json("O campo QUANTIDADE deve ser um número");
+
+        if(!preco_unitario) return res.status(422).json("Preço deve ser preenchido");
+        if(typeof preco_unitario !== "number") return res.status(422).json("O campo PREÇO UNITÁRIO deve ser um número");
+
         const dataAtual = new Date();
         
         try {
@@ -84,43 +93,18 @@ class PedidoVendaController {
 
             if(usuarioResult.length === 0) return res.status(404).json("Usuário não existe");
 
-            const pedidoResult = await db.query(
-                `INSERT INTO pedidos(data_pedido, status, usuario_id, observacoes)
-                VALUES($1, $2, $3, $4) RETURNING *`,
-                [dataAtual, statusFormat, usuario_id, observacoes]
+            const checaCultura = await db.query("SELECT nome FROM culturas WHERE nome = $1", [cultura]);
+            const culturaResult = checaCultura.rows;
+
+            if(culturaResult.length === 0) return res.status(404).json("Cultura não existe");
+
+            await db.query(
+                `INSERT INTO pedidos(cultura_nome, quantidade, preco_unitario, data_pedido, status, usuario_id, observacoes)
+                VALUES($1, $2, $3, $4)`,
+                [cultura, quantidade, preco_unitario, dataAtual, statusFormat, usuario_id, observacoes]
             );
-            const pedido = pedidoResult.rows[0]
-
-            if(pedido.status !== "Concluido") return res.status(201).json("Novo pedido cadastrado com sucesso");
-
-            if (pedido.status === "Concluido") {
-
-                if(!cultura) return res.status(422).json("Nome da cultura deve ser preenchido");
-                if(typeof cultura !== "string") return res.status(422).json("O campo CULTURA deve ser um texto");
-
-                const checaCultura = await db.query("SELECT nome FROM culturas WHERE nome = $1", [cultura]);
-                const culturaResult = checaCultura.rows;
-
-                if(culturaResult.length === 0) return res.status(404).json("Cultura não existe");
-
-                if(!quantidade) return res.status(422).json("Quantidade deve ser preenchido");
-                if(typeof quantidade !== "number") return res.status(422).json("O campo QUANTIDADE deve ser um número");
-
-                if(!preco_unitario) return res.status(422).json("Preço deve ser preenchido");
-                if(typeof preco_unitario !== "number") return res.status(422).json("O campo PREÇO UNITÁRIO deve ser um número");  
-
-                try {
-                    await db.query(
-                        `INSERT INTO produtos_vendidos(pedido_id, cultura_nome, quantidade, preco_unitario)
-                        VALUES($1, $2, $3, $4) RETURNING *`,
-                        [pedido.pedido_id, cultura, quantidade, preco_unitario]
-                    );
-                } catch (error) {
-                    console.log(error);
-                }
-
-                res.status(201).json("Novo produto vendido cadastrado com sucesso");
-            }
+            
+            res.status(201).json("Novo pedido cadastrado")
         } catch (error) {
             console.log(error);
         }
