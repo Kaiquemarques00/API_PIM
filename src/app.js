@@ -11,6 +11,7 @@ import plantioRoutes from "./routes/PlantioRoutes.js"
 import insumoPlantioRoutes from "./routes/InsumoPlantioRoutes.js"
 import colheitaRoutes from "./routes/ColheitaRoutes.js"
 import PedidosVendasRoutes from "./routes/PedidoRoutes.js"
+import relatorioRoutes from "./routes/RelatorioRoutes.js"
 
 dotenv.config();
 
@@ -27,5 +28,6 @@ app.use('/', plantioRoutes);
 app.use('/', insumoPlantioRoutes);
 app.use('/', colheitaRoutes);
 app.use('/', PedidosVendasRoutes);
+app.use('/', relatorioRoutes);
 
 export default app;
