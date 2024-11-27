@@ -75,7 +75,7 @@ class RelatorioController {
                                                     WHERE data_inicio >= '2024-${mesI}-01' AND data_inicio < '2024-${mesF}-01'
                                                     ORDER BY plantio_id ASC`);
 
-            res.status(200).json(consultaPlantiosMes.rows);
+            res.status(200).json(consultaPlantiosMes.rows.length);
         } catch (error) {
             console.log(error);
         }
@@ -124,7 +124,7 @@ class RelatorioController {
                                                     WHERE data_colheita >= '2024-${mesI}-01' AND data_colheita < '2024-${mesF}-01'
                                                     ORDER BY plantio_id ASC`);
 
-            res.status(200).json(consultaColheitaMes.rows);
+            res.status(200).json(consultaColheitaMes.rows.length);
         } catch (error) {
             console.log(error);
         }
