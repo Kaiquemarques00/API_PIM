@@ -12,7 +12,7 @@ class RelatorioController {
                                                     WHERE data_pedido >= '2024-${mesI}-01' AND data_pedido < '2024-${mesF}-01' AND status = 'Concluido'
                                                     ORDER BY pedido_id ASC`);
 
-            res.status(200).json(consultaPedidosMes.rows);
+            res.status(200).json(consultaPedidosMes.rows.length);
         } catch (error) {
             console.log(error);
         }
