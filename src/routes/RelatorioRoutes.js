@@ -11,21 +11,21 @@ const RoleMiddleware = new Role();
 const router = express.Router();
 
 /* Rota de consulta de Vendas por período */
-router.get('/report/sale/period', relatorioController.vendasPorPeriodo);
+router.get('/report/sale/period', [tokenMiddleware.checkToken, RoleMiddleware.checkRole(['Administrador', 'Funcionario'])], relatorioController.vendasPorPeriodo);
 /* Rota de consulta de Venda por cultura */
-router.get('/report/sale/culture', relatorioController.vendasPorCultura);
+router.get('/report/sale/culture', [tokenMiddleware.checkToken, RoleMiddleware.checkRole(['Administrador', 'Funcionario'])], relatorioController.vendasPorCultura);
 /* Rota de consulta de Receita total de vendas */
-router.get('/report/sale/revenue', relatorioController.vendasReceitaTotal);
+router.get('/report/sale/revenue', [tokenMiddleware.checkToken, RoleMiddleware.checkRole(['Administrador', 'Funcionario'])], relatorioController.vendasReceitaTotal);
 /* Rota de consulta de plantios por periodos*/
-router.get('/report/plantings/period', relatorioController.plantiosPorPeriodo);
+router.get('/report/plantings/period', [tokenMiddleware.checkToken, RoleMiddleware.checkRole(['Administrador', 'Funcionario'])], relatorioController.plantiosPorPeriodo);
 /* Rota de consulta de culturas por plantios*/
-router.get('/report/plantings/cultures', relatorioController.culturasPorPlantio);
+router.get('/report/plantings/cultures', [tokenMiddleware.checkToken, RoleMiddleware.checkRole(['Administrador', 'Funcionario'])], relatorioController.culturasPorPlantio);
 /* Rota de consulta plantios por status*/
-router.get('/report/plantings/status', relatorioController.statusPorPlantio);
+router.get('/report/plantings/status', [tokenMiddleware.checkToken, RoleMiddleware.checkRole(['Administrador', 'Funcionario'])], relatorioController.statusPorPlantio);
 /* Rota de consulta Colheita por periodo*/
-router.get('/report/harvest/period', relatorioController.colheitaPorPeriodo);
+router.get('/report/harvest/period', [tokenMiddleware.checkToken, RoleMiddleware.checkRole(['Administrador', 'Funcionario'])], relatorioController.colheitaPorPeriodo);
 /* Rota de consulta insumos por fornecedores*/
-router.get('/report/inputs/suppliers', relatorioController.InsumosPorFornecedor);
+router.get('/report/inputs/suppliers', [tokenMiddleware.checkToken, RoleMiddleware.checkRole(['Administrador', 'Funcionario'])], relatorioController.InsumosPorFornecedor);
 
 
 export default router;
