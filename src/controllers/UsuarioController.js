@@ -16,6 +16,7 @@ class UsuarioController {
       res.status(200).json(usuariosArquivados);
     } catch (error) {
       console.log(error);
+      res.status(422).json("Erro ao acessar banco de dados");
     }
   }
 

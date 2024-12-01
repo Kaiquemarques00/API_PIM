@@ -9,7 +9,7 @@ class RelatorioController {
         
         try {
             const consultaPedidosMes = await db.query(`SELECT * FROM pedidos
-                                                    WHERE data_pedido >= '2024-${mesI}-01' AND data_pedido < '2024-${mesF}-01' AND status = 'Concluido'
+                                                    WHERE data_pedido >= '2024-${mesI}-01' AND data_pedido < '2024-${mesF}-29' AND status = 'Concluido'
                                                     ORDER BY pedido_id ASC`);
 
             res.status(200).json(consultaPedidosMes.rows.length);
@@ -72,7 +72,7 @@ class RelatorioController {
         
         try {
             const consultaPlantiosMes = await db.query(`SELECT * FROM plantios
-                                                    WHERE data_inicio >= '2024-${mesI}-01' AND data_inicio < '2024-${mesF}-01'
+                                                    WHERE data_inicio >= '2024-${mesI}-01' AND data_inicio < '2024-${mesF}-29'
                                                     ORDER BY plantio_id ASC`);
 
             res.status(200).json(consultaPlantiosMes.rows.length);
@@ -121,7 +121,7 @@ class RelatorioController {
         
         try {
             const consultaColheitaMes = await db.query(`SELECT * FROM colheitas
-                                                    WHERE data_colheita >= '2024-${mesI}-01' AND data_colheita < '2024-${mesF}-01'
+                                                    WHERE data_colheita >= '2024-${mesI}-01' AND data_colheita < '2024-${mesF}-29'
                                                     ORDER BY plantio_id ASC`);
 
             res.status(200).json(consultaColheitaMes.rows.length);
