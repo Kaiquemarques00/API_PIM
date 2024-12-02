@@ -348,9 +348,6 @@ class UsuarioController {
         [emailFormat]
       );
 
-      if (checkUserExists.rows.length > 0)
-        return res.status(422).json("Usuário já existe");
-
       // Atualiza usuario de acordo com dado preenchido
       const result = await db.query(
         `UPDATE usuarios SET ${setClausula} WHERE usuario_id = $${
