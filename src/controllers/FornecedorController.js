@@ -318,16 +318,6 @@ class FornecedorController {
       if (checkSupplierExists.rows.length === 0)
         return res.status(404).json("Fornecedor não existe");
 
-      if (cnpj) {
-        const checkSupplierExists = await db.query(
-          `SELECT * FROM fornecedores WHERE fornecedores.cnpj = $1`,
-          [cnpj]
-        );
-
-        if (checkSupplierExists.rows.length > 0)
-          return res.status(409).json("Fornecedor com CNPJ já cadastrado");
-      }
-
       if (Object.keys(dadosParaAtualizarFornecedor).length > 0) {
         await db.query(
           `UPDATE fornecedores SET ${setClauseSupplier} WHERE fornecedor_id = $${
